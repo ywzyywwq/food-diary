@@ -63,14 +63,17 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
 .pill.active{background:var(--gold);color:var(--white);border-color:var(--gold);font-weight:700}
 
 .card-list{display:flex;flex-direction:column;gap:14px}
-.card{background:var(--white);border:1px solid var(--warm-200);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(59,47,32,0.06),0 0 0 0.5px rgba(59,47,32,0.04);animation:fadeUp .35s ease both}
+.card{background:var(--white);border:1px solid var(--warm-200);border-radius:var(--radius);overflow:hidden;transition:all .2s;box-shadow:0 2px 8px rgba(59,47,32,0.06),0 0 0 0.5px rgba(59,47,32,0.04);animation:fadeUp .35s ease both}
 .card:hover{box-shadow:0 6px 20px rgba(59,47,32,0.1);transform:translateY(-2px)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.card-carousel{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;position:relative;background:var(--cream-dark)}
+.card-carousel-wrap{position:relative;border-bottom:1px solid var(--warm-100)}
+.card-carousel{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;background:var(--cream-dark)}
 .card-carousel::-webkit-scrollbar{display:none}
-.card-carousel img{flex-shrink:0;width:100%;height:180px;object-fit:cover;scroll-snap-align:start}
-.card-photo-counter{position:absolute;bottom:8px;right:10px;background:rgba(0,0,0,0.5);color:white;font-size:10px;padding:2px 8px;border-radius:10px;pointer-events:none;font-weight:600;letter-spacing:0.5px}
-.card-carousel-wrap{position:relative;overflow:hidden;border-bottom:1px solid var(--warm-100)}
+.card-carousel img{flex-shrink:0;width:100%;height:200px;object-fit:cover;scroll-snap-align:start;-webkit-user-drag:none;user-select:none}
+.card-photo-counter{position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.45);color:white;font-size:10px;padding:3px 9px;border-radius:10px;pointer-events:none;font-weight:600;letter-spacing:0.5px;backdrop-filter:blur(4px)}
+.card-dots{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px;pointer-events:none}
+.card-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.4);transition:all .2s}
+.card-dot.active{background:white;width:16px;border-radius:3px}
 .card-photo-placeholder{width:100%;height:70px;background:linear-gradient(135deg,var(--warm-100),var(--cream-dark));display:flex;align-items:center;justify-content:center;font-size:28px;opacity:.4;border-bottom:1px solid var(--warm-100)}
 .card-body{padding:14px 16px 12px;border-top:none}
 .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
@@ -429,14 +432,17 @@ function renderCards(){
   if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🍜</div><div class="empty-text">还没有打卡记录<br>点击 + 开始美食之旅</div></div>`;return;}
   el.innerHTML=list.map((e,i)=>{
     const hasPhotos=e.photos&&e.photos.length;
+    const n=hasPhotos?e.photos.length:0;
+    const dotsHtml=n>1?`<div class="card-dots" data-dots="${e.id}">${e.photos.map((_,j)=>`<div class="card-dot${j===0?' active':''}"></div>`).join('')}</div>`:'';
     const photoHtml=hasPhotos?`
       <div class="card-carousel-wrap">
-        <div class="card-carousel">${e.photos.map(p=>`<img src="${p}">`).join('')}</div>
-        ${e.photos.length>1?`<div class="card-photo-counter">${e.photos.length} 张</div>`:''}
+        <div class="card-carousel" data-carousel="${e.id}">${e.photos.map(p=>`<img src="${p}">`).join('')}</div>
+        ${n>1?`<div class="card-photo-counter">1 / ${n}</div>`:''}
+        ${dotsHtml}
       </div>`:`<div class="card-photo-placeholder">${catIcons[e.category]||'🍽️'}</div>`;
-    return `<div class="card" style="animation-delay:${i*.05}s" onclick="openDetail('${e.id}')">
+    return `<div class="card" style="animation-delay:${i*.05}s">
       ${photoHtml}
-      <div class="card-body">
+      <div class="card-body" onclick="openDetail('${e.id}')" style="cursor:pointer">
         <div class="card-top"><div class="card-name">${e.name}</div><div class="card-category">${e.category||''}</div></div>
         ${e.addr?`<div class="card-addr">📍 ${e.district?e.district+'区 ':''}${e.addr}</div>`:''}
         <div class="card-stars">${'★'.repeat(e.rating||0)}${'☆'.repeat(5-(e.rating||0))}</div>
@@ -450,6 +456,19 @@ function renderCards(){
         </div>
       </div>
     </div>`;}).join('');
+  // attach scroll listeners for carousels
+  document.querySelectorAll('.card-carousel').forEach(carousel=>{
+    carousel.addEventListener('scroll',function(){
+      const id=this.dataset.carousel;
+      const w=this.offsetWidth;
+      const idx=Math.round(this.scrollLeft/w);
+      const counter=this.parentElement.querySelector('.card-photo-counter');
+      const total=this.children.length;
+      if(counter)counter.textContent=`${idx+1} / ${total}`;
+      const dotsEl=this.parentElement.querySelector('.card-dots');
+      if(dotsEl){dotsEl.querySelectorAll('.card-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));}
+    });
+  });
 }
 
 // ===== MAP =====
