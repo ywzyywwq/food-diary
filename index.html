@@ -70,6 +70,16 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
 .section-title{font-size:15px;font-weight:800;color:var(--brown-900)}
 .section-count{font-size:11px;color:var(--text-muted);font-weight:400;margin-left:2px}
 .section-line{flex:1;height:1px;background:linear-gradient(90deg,var(--warm-200),transparent)}
+
+.month-bar{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:10px;padding:8px 0}
+.month-arrow{width:32px;height:32px;border-radius:50%;background:var(--white);border:1px solid var(--warm-200);color:var(--brown-500);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:inherit}
+.month-arrow:hover{background:var(--warm-100);border-color:var(--gold)}
+.month-label{font-size:15px;font-weight:700;color:var(--brown-900);min-width:100px;text-align:center}
+.month-stats{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.month-stat{flex:1;min-width:80px;padding:10px;background:var(--white);border:1px solid var(--warm-200);border-radius:var(--radius-sm);text-align:center;box-shadow:var(--shadow-sm)}
+.month-stat-num{font-size:18px;font-weight:900;color:var(--accent)}
+.month-stat-num.green{color:var(--green)}
+.month-stat-label{font-size:9px;color:var(--text-muted);margin-top:2px}
 .card{background:var(--white);border:1px solid var(--warm-200);border-radius:var(--radius);overflow:hidden;transition:all .2s;box-shadow:0 2px 8px rgba(59,47,32,0.06),0 0 0 0.5px rgba(59,47,32,0.04);animation:fadeUp .35s ease both}
 .card:hover{box-shadow:0 6px 20px rgba(59,47,32,0.1);transform:translateY(-2px)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -246,12 +256,19 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
 
 <div class="main">
   <div id="view-list">
+    <div id="greeting" style="font-size:13px;color:var(--brown-500);margin-bottom:12px;padding:8px 12px;background:var(--white);border-radius:var(--radius-sm);border:1px solid var(--warm-200);box-shadow:var(--shadow-sm)"></div>
     <div class="stats-bar" id="statsBar"></div>
     <div class="filters" id="filters"></div>
     <div class="card-list" id="cardList"></div>
   </div>
   <div id="view-foodie" style="display:none">
-    <div class="section-header" style="margin-bottom:12px"><div class="section-icon">🍽️</div><div class="section-title">探店食客</div><div class="section-count" id="foodieCount"></div><div class="section-line"></div></div>
+    <div class="section-header" style="margin-bottom:8px"><div class="section-icon">🍽️</div><div class="section-title">探店食客</div><div class="section-count" id="foodieCount"></div><div class="section-line"></div></div>
+    <div class="month-bar">
+      <button class="month-arrow" onclick="changeMonth('foodie',-1)">‹</button>
+      <div class="month-label" id="foodieMonth"></div>
+      <button class="month-arrow" onclick="changeMonth('foodie',1)">›</button>
+    </div>
+    <div class="month-stats" id="foodieStats"></div>
     <div class="card-list" id="foodieList"></div>
   </div>
   <div id="view-chef" style="display:none">
@@ -317,8 +334,9 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
       <div class="preset-row" id="whoPresets"></div>
       <div class="tag-input-row"><input class="form-input" id="f-who" placeholder="输入名字，回车添加" onkeydown="if(event.key==='Enter'){event.preventDefault();addWho();}"><button class="btn-submit" onclick="addWho()">添加</button></div>
     </div>
+    <div class="form-group"><label class="form-label">💰 消费金额（总计）</label><input class="form-input" id="f-total" type="number" placeholder="e.g. 280（这顿一共花了多少）"></div>
+    <div class="form-group"><label class="form-label">👤 人均消费</label><input class="form-input" id="f-price" type="number" placeholder="e.g. 120（人均多少）"></div>
     <div class="form-group"><label class="form-label">推荐菜</label><input class="form-input" id="f-dishes" placeholder="逗号分隔 e.g. 红烧肉,清蒸鱼"></div>
-    <div class="form-group"><label class="form-label">人均消费</label><input class="form-input" id="f-price" type="number" placeholder="e.g. 120"></div>
     <div class="form-group">
       <label class="form-label">📷 美食照片</label>
       <div class="photo-upload-area" id="photoUploadArea" onclick="document.getElementById('photoInput').click()"><div class="photo-upload-icon">📷</div><div class="photo-upload-text">点击上传照片（可多张）</div></div>
@@ -455,6 +473,7 @@ function renderStats(){
   const t=entries.length,v=entries.reduce((s,e)=>s+(e.visits||1),0);
   const c=new Set(entries.map(e=>e.category)).size;
   const avg=t?(entries.reduce((s,e)=>s+e.rating,0)/t).toFixed(1):'-';
+  document.getElementById('greeting').style.display='none';
   document.getElementById('statsBar').innerHTML=`
     <div class="stat-chip"><div class="stat-num">${t}</div><div class="stat-label">家店</div></div>
     <div class="stat-chip"><div class="stat-num">${v}</div><div class="stat-label">次打卡</div></div>
@@ -497,10 +516,11 @@ function buildCard(e,i,whoLabel){
   return `<div class="card" style="animation-delay:${i*.04}s">
     <div onclick="openDetail('${e.id}')" style="cursor:pointer">${photoHtml}</div>
     <div class="card-body" onclick="openDetail('${e.id}')" style="cursor:pointer">
-      <div class="card-top"><div class="card-name">${e.name}</div><div class="card-category">${e.category||''}</div></div>
+      <div class="card-top"><div class="card-name">${e.name}${e.totalCost?` <span style="font-size:13px;color:var(--accent);font-weight:700">¥${e.totalCost}</span>`:''}</div><div class="card-category">${e.category||''}</div></div>
       ${e.addr?`<div class="card-addr">📍 ${e.district?e.district+'区 ':''}${e.addr}</div>`:''}
       <div class="card-meta">
         <div class="card-stars" style="margin-bottom:0">${'★'.repeat(e.rating||0)}${'☆'.repeat(5-(e.rating||0))}</div>
+        <span style="font-size:14px">${e.rating>=5?'😍':e.rating>=4?'😋':e.rating>=3?'🙂':e.rating>=2?'😐':'😅'}</span>
         ${e.price?`<div class="card-price">¥${e.price}/人</div>`:''}
       </div>
       ${e.dishes&&e.dishes.length?`<div class="card-tags">${e.dishes.map(d=>`<div class="card-tag">${d}</div>`).join('')}</div>`:''}
@@ -525,11 +545,37 @@ function renderCards(){
   el.innerHTML=list.map((e,i)=>buildCard(e,i)).join('');
 }
 
+// Month state for foodie and chef tabs
+const now=new Date();
+let foodieMonth={y:now.getFullYear(),m:now.getMonth()+1};
+let chefMonth={y:now.getFullYear(),m:now.getMonth()+1};
+
+function changeMonth(tab,delta){
+  const mo=tab==='foodie'?foodieMonth:chefMonth;
+  mo.m+=delta;
+  if(mo.m>12){mo.m=1;mo.y++;}
+  if(mo.m<1){mo.m=12;mo.y--;}
+  if(tab==='foodie')renderFoodie();else renderChef();
+}
+
+function getMonthLabel(mo){return `${mo.y}年${mo.m}月`;}
+function matchMonth(date,mo){if(!date)return false;return date.startsWith(`${mo.y}-${String(mo.m).padStart(2,'0')}`);}
+
 function renderFoodie(){
-  const list=entries.filter(e=>e.entryType!=='chef').sort((a,b)=>b.date.localeCompare(a.date));
-  document.getElementById('foodieCount').textContent=list.length+'条';
+  const all=entries.filter(e=>e.entryType!=='chef').sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('foodieCount').textContent=all.length+'条';
+  document.getElementById('foodieMonth').textContent=getMonthLabel(foodieMonth);
+  const list=all.filter(e=>matchMonth(e.date,foodieMonth));
+  // stats
+  const totalSpend=list.reduce((s,e)=>s+(e.totalCost||e.price||0),0);
+  const count=list.length;
+  const avgSpend=count?Math.round(totalSpend/count):0;
+  document.getElementById('foodieStats').innerHTML=`
+    <div class="month-stat"><div class="month-stat-num">${count}</div><div class="month-stat-label">本月打卡</div></div>
+    <div class="month-stat"><div class="month-stat-num">¥${totalSpend}</div><div class="month-stat-label">本月总消费</div></div>
+    <div class="month-stat"><div class="month-stat-num">¥${avgSpend}</div><div class="month-stat-label">本月均消费</div></div>`;
   const el=document.getElementById('foodieList');
-  if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🍽️</div><div class="empty-text">还没有探店记录<br>出去吃顿好的打个卡吧</div></div>`;return;}
+  if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🍽️</div><div class="empty-text">本月还没有探店记录</div></div>`;return;}
   el.innerHTML=list.map((e,i)=>buildCard(e,i,'食客')).join('');
 }
 
@@ -658,7 +704,7 @@ function openAddModal(id){
   document.getElementById('btnDeleteEntry').style.display=id?'':'none';
   document.getElementById('f-name').value='';document.getElementById('f-district').value='';
   document.getElementById('f-addr').value='';document.getElementById('f-dishes').value='';
-  document.getElementById('f-price').value='';document.getElementById('f-notes').value='';
+  document.getElementById('f-price').value='';document.getElementById('f-total').value='';document.getElementById('f-notes').value='';
   document.getElementById('f-date').value=new Date().toISOString().slice(0,10);
   document.getElementById('f-cat-input').value='';document.getElementById('f-who').value='';
   document.getElementById('photoUploadArea').style.display='';
@@ -666,6 +712,7 @@ function openAddModal(id){
     document.getElementById('f-name').value=e.name;formCategory=e.category||'';
     document.getElementById('f-district').value=e.district||'';document.getElementById('f-addr').value=e.addr||'';
     document.getElementById('f-dishes').value=(e.dishes||[]).join(',');document.getElementById('f-price').value=e.price||'';
+    document.getElementById('f-total').value=e.totalCost||'';
     document.getElementById('f-notes').value=e.notes||'';document.getElementById('f-date').value=e.date;
     formRating=e.rating;formWho=[...(e.who||[])];formPhotos=[...(e.photos||[])];
     formEntryType=e.entryType||'foodie';
@@ -685,6 +732,7 @@ async function saveEntry(){
     addr:document.getElementById('f-addr').value.trim(),rating:formRating||3,who:formWho,
     dishes:document.getElementById('f-dishes').value.split(/[,，]/).map(s=>s.trim()).filter(Boolean),
     price:parseInt(document.getElementById('f-price').value)||0,
+    totalCost:parseInt(document.getElementById('f-total').value)||0,
     notes:document.getElementById('f-notes').value.trim(),
     date:document.getElementById('f-date').value||new Date().toISOString().slice(0,10),photos:formPhotos};
   if(editingId){
