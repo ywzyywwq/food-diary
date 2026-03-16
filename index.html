@@ -62,13 +62,17 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
 .pill{padding:6px 14px;border-radius:20px;background:var(--white);border:1px solid var(--warm-200);font-size:12px;color:var(--text-secondary);cursor:pointer;transition:all .2s}
 .pill.active{background:var(--gold);color:var(--white);border-color:var(--gold);font-weight:700}
 
-.card-list{display:flex;flex-direction:column;gap:12px}
-.card{background:var(--white);border:1px solid var(--warm-200);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all .2s;box-shadow:var(--shadow-sm);animation:fadeUp .35s ease both}
-.card:hover{box-shadow:var(--shadow);transform:translateY(-1px)}
+.card-list{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--white);border:1px solid var(--warm-200);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(59,47,32,0.06),0 0 0 0.5px rgba(59,47,32,0.04);animation:fadeUp .35s ease both}
+.card:hover{box-shadow:0 6px 20px rgba(59,47,32,0.1);transform:translateY(-2px)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.card-photo{width:100%;height:160px;object-fit:cover;background:var(--cream-dark);display:block}
-.card-photo-placeholder{width:100%;height:70px;background:linear-gradient(135deg,var(--warm-100),var(--cream-dark));display:flex;align-items:center;justify-content:center;font-size:28px;opacity:.4}
-.card-body{padding:14px 16px}
+.card-carousel{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;position:relative;background:var(--cream-dark)}
+.card-carousel::-webkit-scrollbar{display:none}
+.card-carousel img{flex-shrink:0;width:100%;height:180px;object-fit:cover;scroll-snap-align:start}
+.card-photo-counter{position:absolute;bottom:8px;right:10px;background:rgba(0,0,0,0.5);color:white;font-size:10px;padding:2px 8px;border-radius:10px;pointer-events:none;font-weight:600;letter-spacing:0.5px}
+.card-carousel-wrap{position:relative;overflow:hidden;border-bottom:1px solid var(--warm-100)}
+.card-photo-placeholder{width:100%;height:70px;background:linear-gradient(135deg,var(--warm-100),var(--cream-dark));display:flex;align-items:center;justify-content:center;font-size:28px;opacity:.4;border-bottom:1px solid var(--warm-100)}
+.card-body{padding:14px 16px 12px;border-top:none}
 .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
 .card-name{font-size:16px;font-weight:700;color:var(--brown-900)}
 .card-category{font-size:10px;padding:3px 8px;border-radius:10px;background:var(--warm-100);color:var(--gold-dark);white-space:nowrap;font-weight:500}
@@ -423,9 +427,15 @@ function renderCards(){
   const list=fil().sort((a,b)=>b.date.localeCompare(a.date));
   const el=document.getElementById('cardList');
   if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🍜</div><div class="empty-text">还没有打卡记录<br>点击 + 开始美食之旅</div></div>`;return;}
-  el.innerHTML=list.map((e,i)=>`
-    <div class="card" style="animation-delay:${i*.05}s" onclick="openDetail('${e.id}')">
-      ${e.photos&&e.photos.length?`<img class="card-photo" src="${e.photos[0]}">`:`<div class="card-photo-placeholder">${catIcons[e.category]||'🍽️'}</div>`}
+  el.innerHTML=list.map((e,i)=>{
+    const hasPhotos=e.photos&&e.photos.length;
+    const photoHtml=hasPhotos?`
+      <div class="card-carousel-wrap">
+        <div class="card-carousel">${e.photos.map(p=>`<img src="${p}">`).join('')}</div>
+        ${e.photos.length>1?`<div class="card-photo-counter">${e.photos.length} 张</div>`:''}
+      </div>`:`<div class="card-photo-placeholder">${catIcons[e.category]||'🍽️'}</div>`;
+    return `<div class="card" style="animation-delay:${i*.05}s" onclick="openDetail('${e.id}')">
+      ${photoHtml}
       <div class="card-body">
         <div class="card-top"><div class="card-name">${e.name}</div><div class="card-category">${e.category||''}</div></div>
         ${e.addr?`<div class="card-addr">📍 ${e.district?e.district+'区 ':''}${e.addr}</div>`:''}
@@ -439,7 +449,7 @@ function renderCards(){
           <div class="card-who">${(e.who||[]).map(w=>`<div class="card-avatar" style="background:${getWhoColor(w)}">${w[0]}</div>`).join('')}</div>
         </div>
       </div>
-    </div>`).join('');
+    </div>`;}).join('');
 }
 
 // ===== MAP =====
