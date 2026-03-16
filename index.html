@@ -33,7 +33,7 @@
 <style>
 :root{--cream:#FDF8F0;--cream-dark:#F5EDE0;--warm-100:#FAF4EB;--warm-200:#F0E4D0;--warm-300:#E0CEB0;--brown-900:#3B2F20;--brown-700:#5C4A35;--brown-500:#8B7355;--brown-400:#A89070;--brown-300:#C4AD8F;--brown-200:#D9C9AE;--gold:#C8963E;--gold-light:#DFAF55;--gold-dark:#A67A2E;--accent:#D4572A;--green:#5A8F5C;--blue:#4A7A9B;--text-primary:#3B2F20;--text-secondary:#7A6B58;--text-muted:#A89888;--white:#FFFFFF;--shadow-sm:0 2px 8px rgba(59,47,32,0.06);--shadow:0 4px 16px rgba(59,47,32,0.08);--shadow-lg:0 8px 32px rgba(59,47,32,0.12);--radius:16px;--radius-sm:10px;--radius-xs:6px}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;background:var(--cream);color:var(--text-primary);min-height:100vh;overflow-x:hidden}
+body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;background:var(--cream);color:var(--text-primary);min-height:100vh;overflow-x:hidden;background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='10' y='30' font-size='14' opacity='0.03'%3E🍜%3C/text%3E%3Ctext x='35' y='55' font-size='10' opacity='0.03'%3E🥢%3C/text%3E%3C/svg%3E")}
 
 .header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(253,248,240,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--warm-200);padding:14px 20px}
 .header-inner{display:flex;align-items:center;justify-content:space-between;max-width:600px;margin:0 auto}
@@ -45,10 +45,11 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
 .btn-icon:hover{background:var(--warm-100)}
 
 .tabs{position:fixed;top:64px;left:0;right:0;z-index:99;padding:0 20px;background:rgba(253,248,240,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-.tabs-inner{max-width:600px;margin:0 auto;display:flex;border-bottom:1px solid var(--warm-200)}
-.tab{flex:1;padding:11px 0;text-align:center;font-size:13px;font-weight:500;color:var(--text-muted);cursor:pointer;position:relative}
+.tabs-inner{max-width:600px;margin:0 auto;display:flex;border-bottom:1px solid var(--warm-200);overflow-x:auto;scrollbar-width:none}
+.tabs-inner::-webkit-scrollbar{display:none}
+.tab{flex:1;min-width:0;padding:11px 4px;text-align:center;font-size:12px;font-weight:500;color:var(--text-muted);cursor:pointer;position:relative;white-space:nowrap}
 .tab.active{color:var(--gold-dark);font-weight:700}
-.tab.active::after{content:'';position:absolute;bottom:-1px;left:25%;right:25%;height:2.5px;background:var(--gold);border-radius:2px}
+.tab.active::after{content:'';position:absolute;bottom:-1px;left:20%;right:20%;height:2.5px;background:var(--gold);border-radius:2px}
 
 .main{padding:116px 16px 100px;max-width:600px;margin:0 auto}
 
@@ -63,6 +64,12 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
 .pill.active{background:var(--gold);color:var(--white);border-color:var(--gold);font-weight:700}
 
 .card-list{display:flex;flex-direction:column;gap:14px}
+
+.section-header{display:flex;align-items:center;gap:8px;padding:6px 0;margin-top:8px}
+.section-icon{font-size:20px;line-height:1}
+.section-title{font-size:15px;font-weight:800;color:var(--brown-900)}
+.section-count{font-size:11px;color:var(--text-muted);font-weight:400;margin-left:2px}
+.section-line{flex:1;height:1px;background:linear-gradient(90deg,var(--warm-200),transparent)}
 .card{background:var(--white);border:1px solid var(--warm-200);border-radius:var(--radius);overflow:hidden;transition:all .2s;box-shadow:0 2px 8px rgba(59,47,32,0.06),0 0 0 0.5px rgba(59,47,32,0.04);animation:fadeUp .35s ease both}
 .card:hover{box-shadow:0 6px 20px rgba(59,47,32,0.1);transform:translateY(-2px)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -98,6 +105,8 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
 .card-stars{color:var(--gold);font-size:13px;letter-spacing:1px;margin-bottom:6px}
 .card-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
 .card-tag{font-size:10px;padding:2px 8px;border-radius:8px;background:var(--warm-100);color:var(--brown-500)}
+.card-meta{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.card-price{display:inline-flex;align-items:center;gap:2px;font-size:11px;color:var(--accent);font-weight:700;background:rgba(212,87,42,0.06);padding:2px 8px;border-radius:8px}
 .card-footer{display:flex;justify-content:space-between;align-items:center}
 .card-date{font-size:11px;color:var(--text-muted)}
 .card-who{display:flex;gap:3px}
@@ -106,7 +115,8 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
 .visit-badge::before{content:'🔥';font-size:11px}
 
 .empty{text-align:center;padding:50px 20px;color:var(--text-muted)}
-.empty-icon{font-size:48px;margin-bottom:14px}
+.empty-icon{font-size:56px;margin-bottom:14px;animation:bounce 2s infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .empty-text{font-size:14px;line-height:1.8}
 
 .map-wrap{width:100%;border-radius:var(--radius);overflow:hidden;border:1px solid var(--warm-200);box-shadow:var(--shadow);margin-bottom:16px;background:var(--white);position:relative}
@@ -153,6 +163,9 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
 .star-input{display:flex;gap:6px}
 .star-btn{width:36px;height:36px;border-radius:50%;background:var(--white);border:1px solid var(--warm-200);color:var(--brown-300);font-size:18px;cursor:pointer;transition:all .2s}
 .star-btn.active{color:var(--gold);border-color:var(--gold);background:rgba(200,150,62,0.08)}
+
+.type-btn{flex:1;padding:12px;border-radius:var(--radius-sm);background:var(--white);border:2px solid var(--warm-200);font-size:14px;font-weight:600;color:var(--text-secondary);cursor:pointer;transition:all .2s;font-family:inherit}
+.type-btn.active{border-color:var(--gold);background:rgba(200,150,62,0.08);color:var(--gold-dark)}
 
 /* Tag system shared by who + category */
 .tag-row{display:flex;gap:6px;flex-wrap:wrap;min-height:24px}
@@ -201,7 +214,8 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
 .detail-gallery img{height:100px;border-radius:var(--radius-xs);object-fit:cover;flex-shrink:0;cursor:pointer}
 
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:linear-gradient(0deg,var(--cream) 50%,transparent);padding:10px 20px 26px;display:flex;justify-content:center}
-.btn-add{width:54px;height:54px;border-radius:50%;background:var(--gold);border:none;box-shadow:0 4px 20px rgba(200,150,62,0.35);color:var(--white);font-size:28px;font-weight:300;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.btn-add{width:54px;height:54px;border-radius:50%;background:var(--gold);border:none;box-shadow:0 4px 20px rgba(200,150,62,0.35);color:var(--white);font-size:28px;font-weight:300;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;animation:pulse-glow 3s infinite}
+@keyframes pulse-glow{0%,100%{box-shadow:0 4px 20px rgba(200,150,62,0.35)}50%{box-shadow:0 4px 28px rgba(200,150,62,0.55)}}
 .btn-add:hover{transform:scale(1.08);background:var(--gold-dark)}
 .btn-add:active{transform:scale(.95)}
 
@@ -224,6 +238,8 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
 
 <div class="tabs"><div class="tabs-inner">
   <div class="tab active" data-tab="list" onclick="switchTab('list')">打卡列表</div>
+  <div class="tab" data-tab="foodie" onclick="switchTab('foodie')">探店食客</div>
+  <div class="tab" data-tab="chef" onclick="switchTab('chef')">我是大厨</div>
   <div class="tab" data-tab="map" onclick="switchTab('map')">美食地图</div>
   <div class="tab" data-tab="random" onclick="switchTab('random')">今天吃啥</div>
 </div></div>
@@ -233,6 +249,14 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
     <div class="stats-bar" id="statsBar"></div>
     <div class="filters" id="filters"></div>
     <div class="card-list" id="cardList"></div>
+  </div>
+  <div id="view-foodie" style="display:none">
+    <div class="section-header" style="margin-bottom:12px"><div class="section-icon">🍽️</div><div class="section-title">探店食客</div><div class="section-count" id="foodieCount"></div><div class="section-line"></div></div>
+    <div class="card-list" id="foodieList"></div>
+  </div>
+  <div id="view-chef" style="display:none">
+    <div class="section-header" style="margin-bottom:12px"><div class="section-icon">👨‍🍳</div><div class="section-title">我是大厨</div><div class="section-count" id="chefCount"></div><div class="section-line"></div></div>
+    <div class="card-list" id="chefList"></div>
   </div>
   <div id="view-map" style="display:none">
     <div class="map-wrap" id="mapWrap">
@@ -257,6 +281,13 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
   <div class="modal-handle"></div>
   <div class="modal-header"><div class="modal-title" id="modalTitle">新增打卡</div><button class="modal-close" onclick="closeAddModal()">✕</button></div>
   <div class="modal-body">
+    <div class="form-group">
+      <label class="form-label">这条记录属于 *</label>
+      <div style="display:flex;gap:8px">
+        <button class="type-btn active" id="typeBtn-foodie" onclick="setEntryType('foodie')">🍽️ 探店食客</button>
+        <button class="type-btn" id="typeBtn-chef" onclick="setEntryType('chef')">👨‍🍳 我是大厨</button>
+      </div>
+    </div>
     <div class="form-group"><label class="form-label">店名 *</label><input class="form-input" id="f-name" placeholder="e.g. 阿大葱油饼"></div>
     <div class="form-group">
       <label class="form-label">分类</label>
@@ -281,7 +312,7 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
       <button class="star-btn" onclick="setRating(1)">★</button><button class="star-btn" onclick="setRating(2)">★</button><button class="star-btn" onclick="setRating(3)">★</button><button class="star-btn" onclick="setRating(4)">★</button><button class="star-btn" onclick="setRating(5)">★</button>
     </div></div>
     <div class="form-group">
-      <label class="form-label">谁去了</label>
+      <label class="form-label" id="whoLabel">食客</label>
       <div class="tag-row" id="whoTags"></div>
       <div class="preset-row" id="whoPresets"></div>
       <div class="tag-input-row"><input class="form-input" id="f-who" placeholder="输入名字，回车添加" onkeydown="if(event.key==='Enter'){event.preventDefault();addWho();}"><button class="btn-submit" onclick="addWho()">添加</button></div>
@@ -316,7 +347,7 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
 const DB_NAME='FoodDiaryDB';const DB_VER=1;const STORE='entries';
 let db=null;let entries=[];
 let currentFilter='全部';let currentTab='list';
-let editingId=null;let formRating=0;let formWho=[];let formPhotos=[];let formCategory='';
+let editingId=null;let formRating=0;let formWho=[];let formPhotos=[];let formCategory='';let formEntryType='foodie';
 
 const defaultCats=['中餐','火锅','烧烤','日料','西餐','面包甜品','奶茶咖啡','小吃','早餐','午餐','晚餐','夜宵','下午茶','自己做的','其他'];
 const catIcons={'中餐':'🥢','火锅':'🫕','烧烤':'🍖','日料':'🍣','西餐':'🍝','面包甜品':'🍰','奶茶咖啡':'☕','小吃':'🥟','自己做的':'🏠','早餐':'🌅','午餐':'☀️','晚餐':'🌙','夜宵':'🌃','下午茶':'🫖','其他':'🍽️'};
@@ -413,7 +444,12 @@ async function saveToDb(entry){await dbPut(entry);entries=await dbGetAll();}
 async function deleteFromDb(id){await dbDelete(id);entries=await dbGetAll();}
 
 // ===== RENDER =====
-function render(){renderStats();renderFilters();renderCards();if(currentTab==='map')renderMap();if(currentTab==='random')renderTop();}
+function render(){renderStats();renderFilters();renderCards();
+  if(currentTab==='foodie')renderFoodie();
+  if(currentTab==='chef')renderChef();
+  if(currentTab==='map')renderMap();
+  if(currentTab==='random')renderTop();
+}
 
 function renderStats(){
   const t=entries.length,v=entries.reduce((s,e)=>s+(e.visits||1),0);
@@ -441,42 +477,68 @@ function fil(){
   return entries.filter(e=>e.category===currentFilter);
 }
 
+function buildCard(e,i,whoLabel){
+  const label=whoLabel||(e.entryType==='chef'?'厨师':'食客');
+  const ps=e.photos||[];const n=ps.length;
+  let photoHtml='';
+  if(n===0){
+    photoHtml=`<div class="card-photo-placeholder">${catIcons[e.category]||'🍽️'}</div>`;
+  }else if(n<=6){
+    const cls=n<=5?'p'+n:'p6plus';
+    photoHtml=`<div class="card-photos ${cls}">${ps.map(p=>`<img src="${p}">`).join('')}</div>`;
+  }else{
+    const show=ps.slice(0,5);const extra=n-5;
+    photoHtml=`<div class="card-photos p6plus">
+      ${show.slice(0,4).map(p=>`<img src="${p}">`).join('')}
+      <div class="photo-more-wrap"><img src="${show[4]}"><div class="photo-more-overlay">+${extra}</div></div>
+    </div>`;
+  }
+  const whoText=(e.who||[]).length?`<div style="font-size:10px;color:var(--text-muted);margin-bottom:4px">${label}：${(e.who||[]).join('、')}</div>`:'';
+  return `<div class="card" style="animation-delay:${i*.04}s">
+    <div onclick="openDetail('${e.id}')" style="cursor:pointer">${photoHtml}</div>
+    <div class="card-body" onclick="openDetail('${e.id}')" style="cursor:pointer">
+      <div class="card-top"><div class="card-name">${e.name}</div><div class="card-category">${e.category||''}</div></div>
+      ${e.addr?`<div class="card-addr">📍 ${e.district?e.district+'区 ':''}${e.addr}</div>`:''}
+      <div class="card-meta">
+        <div class="card-stars" style="margin-bottom:0">${'★'.repeat(e.rating||0)}${'☆'.repeat(5-(e.rating||0))}</div>
+        ${e.price?`<div class="card-price">¥${e.price}/人</div>`:''}
+      </div>
+      ${e.dishes&&e.dishes.length?`<div class="card-tags">${e.dishes.map(d=>`<div class="card-tag">${d}</div>`).join('')}</div>`:''}
+      ${whoText}
+      <div class="card-footer">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="card-date">${e.date||''}</div>
+          ${(e.visits||1)>1?`<div class="visit-badge">${e.visits}次</div>`:''}
+        </div>
+        <div class="card-who">${(e.who||[]).map(w=>`<div class="card-avatar" style="background:${getWhoColor(w)}">${w[0]}</div>`).join('')}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+const homeCats=new Set(['自己做的','早餐','午餐','晚餐','夜宵','下午茶']);
+
 function renderCards(){
   const list=fil().sort((a,b)=>b.date.localeCompare(a.date));
   const el=document.getElementById('cardList');
   if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🍜</div><div class="empty-text">还没有打卡记录<br>点击 + 开始美食之旅</div></div>`;return;}
-  el.innerHTML=list.map((e,i)=>{
-    const ps=e.photos||[];const n=ps.length;
-    let photoHtml='';
-    if(n===0){
-      photoHtml=`<div class="card-photo-placeholder">${catIcons[e.category]||'🍽️'}</div>`;
-    }else if(n<=6){
-      const cls=n<=5?'p'+n:'p6plus';
-      photoHtml=`<div class="card-photos ${cls}">${ps.map(p=>`<img src="${p}">`).join('')}</div>`;
-    }else{
-      // show first 5, last one has +N overlay
-      const show=ps.slice(0,5);const extra=n-5;
-      photoHtml=`<div class="card-photos p6plus">
-        ${show.slice(0,4).map(p=>`<img src="${p}">`).join('')}
-        <div class="photo-more-wrap"><img src="${show[4]}"><div class="photo-more-overlay">+${extra}</div></div>
-      </div>`;
-    }
-    return `<div class="card" style="animation-delay:${i*.05}s">
-      <div onclick="openDetail('${e.id}')" style="cursor:pointer">${photoHtml}</div>
-      <div class="card-body" onclick="openDetail('${e.id}')" style="cursor:pointer">
-        <div class="card-top"><div class="card-name">${e.name}</div><div class="card-category">${e.category||''}</div></div>
-        ${e.addr?`<div class="card-addr">📍 ${e.district?e.district+'区 ':''}${e.addr}</div>`:''}
-        <div class="card-stars">${'★'.repeat(e.rating||0)}${'☆'.repeat(5-(e.rating||0))}</div>
-        ${e.dishes&&e.dishes.length?`<div class="card-tags">${e.dishes.map(d=>`<div class="card-tag">${d}</div>`).join('')}</div>`:''}
-        <div class="card-footer">
-          <div style="display:flex;align-items:center;gap:8px">
-            <div class="card-date">${e.date||''}</div>
-            ${(e.visits||1)>1?`<div class="visit-badge">${e.visits}次</div>`:''}
-          </div>
-          <div class="card-who">${(e.who||[]).map(w=>`<div class="card-avatar" style="background:${getWhoColor(w)}">${w[0]}</div>`).join('')}</div>
-        </div>
-      </div>
-    </div>`;}).join('');
+  el.innerHTML=list.map((e,i)=>buildCard(e,i)).join('');
+}
+
+function renderFoodie(){
+  const list=entries.filter(e=>e.entryType!=='chef').sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('foodieCount').textContent=list.length+'条';
+  const el=document.getElementById('foodieList');
+  if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🍽️</div><div class="empty-text">还没有探店记录<br>出去吃顿好的打个卡吧</div></div>`;return;}
+  el.innerHTML=list.map((e,i)=>buildCard(e,i,'食客')).join('');
+}
+
+function renderChef(){
+  const list=entries.filter(e=>e.entryType==='chef').sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('chefCount').textContent=list.length+'条';
+  const el=document.getElementById('chefList');
+  if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-icon">👨‍🍳</div><div class="empty-text">还没有下厨记录<br>今天自己做一顿吧</div></div>`;return;}
+  el.innerHTML=list.map((e,i)=>buildCard(e,i,'厨师')).join('');
 }
 
 // ===== MAP =====
@@ -528,7 +590,8 @@ function renderTop(){
 
 // ===== TABS =====
 function switchTab(tab){currentTab=tab;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
-  document.getElementById('view-list').style.display=tab==='list'?'':'none';document.getElementById('view-map').style.display=tab==='map'?'':'none';document.getElementById('view-random').style.display=tab==='random'?'':'none';render();}
+  ['list','foodie','chef','map','random'].forEach(v=>document.getElementById('view-'+v).style.display=v===tab?'':'none');
+  render();}
 function setFilter(f){currentFilter=f;render();}
 
 // ===== RANDOM =====
@@ -581,8 +644,16 @@ function renderPhotoGrid(){
 }
 
 // ===== ADD/EDIT =====
+function setEntryType(type){
+  formEntryType=type;
+  document.getElementById('typeBtn-foodie').classList.toggle('active',type==='foodie');
+  document.getElementById('typeBtn-chef').classList.toggle('active',type==='chef');
+  document.getElementById('whoLabel').textContent=type==='chef'?'厨师':'食客';
+  document.getElementById('f-name').placeholder=type==='chef'?'e.g. 红烧排骨':'e.g. 阿大葱油饼';
+}
+
 function openAddModal(id){
-  editingId=id||null;formRating=0;formWho=[];formPhotos=[];formCategory='';
+  editingId=id||null;formRating=0;formWho=[];formPhotos=[];formCategory='';formEntryType='foodie';
   document.getElementById('modalTitle').textContent=id?'编辑打卡':'新增打卡';
   document.getElementById('btnDeleteEntry').style.display=id?'':'none';
   document.getElementById('f-name').value='';document.getElementById('f-district').value='';
@@ -597,7 +668,9 @@ function openAddModal(id){
     document.getElementById('f-dishes').value=(e.dishes||[]).join(',');document.getElementById('f-price').value=e.price||'';
     document.getElementById('f-notes').value=e.notes||'';document.getElementById('f-date').value=e.date;
     formRating=e.rating;formWho=[...(e.who||[])];formPhotos=[...(e.photos||[])];
+    formEntryType=e.entryType||'foodie';
   }}
+  setEntryType(formEntryType);
   updateStarUI();renderCatTags();renderWhoTags();renderPhotoGrid();
   document.getElementById('addModal').classList.add('show');
 }
@@ -608,7 +681,7 @@ function updateStarUI(){document.querySelectorAll('#starInput .star-btn').forEac
 async function saveEntry(){
   const name=document.getElementById('f-name').value.trim();
   if(!name){alert('请输入店名！');return;}
-  const data={name,category:formCategory||'其他',district:document.getElementById('f-district').value,
+  const data={name,category:formCategory||'其他',entryType:formEntryType,district:document.getElementById('f-district').value,
     addr:document.getElementById('f-addr').value.trim(),rating:formRating||3,who:formWho,
     dishes:document.getElementById('f-dishes').value.split(/[,，]/).map(s=>s.trim()).filter(Boolean),
     price:parseInt(document.getElementById('f-price').value)||0,
@@ -624,6 +697,7 @@ async function saveEntry(){
       existing.notes=data.notes;existing.photos=[...(existing.photos||[]),...data.photos];
       if(data.dishes.length)existing.dishes=[...new Set([...(existing.dishes||[]),...data.dishes])];
       if(data.district)existing.district=data.district;if(data.category)existing.category=data.category;
+      existing.entryType=data.entryType;
       if(data.who.length)existing.who=[...new Set([...(existing.who||[]),...data.who])];
       await saveToDb(existing);
     }else{data.id=gid();data.visits=1;await saveToDb(data);}
