@@ -154,17 +154,17 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
 
 .modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(59,47,32,0.35);backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center}
 .modal-overlay.show{display:flex}
-.modal{width:100%;max-width:600px;max-height:90vh;background:var(--cream);border-radius:20px 20px 0 0;overflow-y:auto;box-shadow:var(--shadow-lg);animation:slideUp .3s ease}
+.modal{width:100%;max-width:600px;max-height:90vh;background:var(--cream);border-radius:20px 20px 0 0;overflow-y:auto;overflow-x:hidden;box-shadow:var(--shadow-lg);animation:slideUp .3s ease}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .modal-handle{width:36px;height:4px;border-radius:2px;background:var(--brown-300);margin:10px auto 0;opacity:.4}
 .modal-header{padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--warm-200);position:sticky;top:0;background:var(--cream);z-index:1}
 .modal-title{font-size:17px;font-weight:700;color:var(--brown-900)}
 .modal-close{width:30px;height:30px;border-radius:50%;background:var(--warm-200);border:none;color:var(--brown-500);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.modal-body{padding:18px 20px 30px}
+.modal-body{padding:18px 20px 30px;overflow-x:hidden}
 
-.form-group{margin-bottom:16px}
+.form-group{margin-bottom:16px;max-width:100%}
 .form-label{display:block;font-size:12px;font-weight:600;color:var(--brown-500);margin-bottom:5px}
-.form-input,.form-select,.form-textarea{width:100%;padding:11px 14px;background:var(--white);border:1px solid var(--warm-200);border-radius:var(--radius-sm);color:var(--text-primary);font-size:14px;font-family:inherit;transition:border-color .2s}
+.form-input,.form-select,.form-textarea{width:100%;max-width:100%;padding:11px 14px;background:var(--white);border:1px solid var(--warm-200);border-radius:var(--radius-sm);color:var(--text-primary);font-size:14px;font-family:inherit;transition:border-color .2s;box-sizing:border-box}
 .form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--gold)}
 .form-input::placeholder,.form-textarea::placeholder{color:var(--brown-300)}
 .form-textarea{min-height:70px;resize:vertical}
@@ -182,9 +182,9 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
 .tag-item{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:16px;color:var(--white);font-size:12px;font-weight:600;animation:fadeUp .2s ease}
 .tag-remove{background:none;border:none;color:rgba(255,255,255,0.7);font-size:14px;cursor:pointer;padding:0 2px;line-height:1}
 .tag-remove:hover{color:var(--white)}
-.tag-input-row{display:flex;gap:6px;margin-top:6px}
-.tag-input-row input{flex:1}
-.tag-input-row button{width:auto;padding:8px 16px;font-size:13px}
+.tag-input-row{display:flex;gap:6px;margin-top:6px;max-width:100%}
+.tag-input-row input{flex:1;min-width:0}
+.tag-input-row button{width:auto;padding:8px 16px;font-size:13px;flex-shrink:0}
 .preset-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
 .preset-btn{padding:4px 10px;border-radius:14px;background:var(--warm-100);border:1px solid var(--warm-200);color:var(--brown-500);font-size:11px;cursor:pointer;transition:all .2s}
 .preset-btn:hover{background:var(--warm-200)}
@@ -239,7 +239,7 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
 <body>
 
 <div class="header"><div class="header-inner">
-  <div><div class="logo">爱<span>美食</span>爱生活</div><div class="logo-sub">FOOD DIARY</div></div>
+  <div><div class="logo">爱<span>美食</span>爱生活</div><div class="logo-sub">FOOD DIARY <span style="color:var(--gold);font-weight:700;letter-spacing:3px;margin-left:4px">QING</span></div></div>
   <div class="header-actions">
     <div class="btn-icon" onclick="exportData()" title="导出">↓</div>
     <div class="btn-icon" onclick="importData()" title="导入">↑</div>
@@ -334,9 +334,22 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
       <div class="preset-row" id="whoPresets"></div>
       <div class="tag-input-row"><input class="form-input" id="f-who" placeholder="输入名字，回车添加" onkeydown="if(event.key==='Enter'){event.preventDefault();addWho();}"><button class="btn-submit" onclick="addWho()">添加</button></div>
     </div>
-    <div class="form-group"><label class="form-label">💰 消费金额（总计）</label><input class="form-input" id="f-total" type="number" placeholder="e.g. 280（这顿一共花了多少）"></div>
-    <div class="form-group"><label class="form-label">👤 人均消费</label><input class="form-input" id="f-price" type="number" placeholder="e.g. 120（人均多少）"></div>
-    <div class="form-group"><label class="form-label">推荐菜</label><input class="form-input" id="f-dishes" placeholder="逗号分隔 e.g. 红烧肉,清蒸鱼"></div>
+    <!-- Foodie fields -->
+    <div id="foodie-fields">
+      <div class="form-group"><label class="form-label">💰 消费金额（总计）</label><input class="form-input" id="f-total" type="number" placeholder="e.g. 280（这顿一共花了多少）"></div>
+      <div class="form-group"><label class="form-label">👤 人均消费</label><input class="form-input" id="f-price" type="number" placeholder="e.g. 120（人均多少）"></div>
+      <div class="form-group"><label class="form-label">推荐菜</label><input class="form-input" id="f-dishes" placeholder="逗号分隔 e.g. 红烧肉,清蒸鱼"></div>
+    </div>
+    <!-- Chef fields -->
+    <div id="chef-fields" style="display:none">
+      <div class="form-group">
+        <label class="form-label">🥬 食材</label>
+        <div class="tag-row" id="ingredientTags"></div>
+        <div class="preset-row" id="ingredientPresets"></div>
+        <div class="tag-input-row"><input class="form-input" id="f-ingredient" placeholder="输入食材名，回车添加" onkeydown="if(event.key==='Enter'){event.preventDefault();addIngredient();}"><button class="btn-submit" onclick="addIngredient()">添加</button></div>
+      </div>
+      <div class="form-group"><label class="form-label">💰 食材总计</label><input class="form-input" id="f-ingredient-cost" type="number" placeholder="e.g. 50（食材一共花了多少）"></div>
+    </div>
     <div class="form-group">
       <label class="form-label">📷 美食照片</label>
       <div class="photo-upload-area" id="photoUploadArea" onclick="document.getElementById('photoInput').click()"><div class="photo-upload-icon">📷</div><div class="photo-upload-text">点击上传照片（可多张）</div></div>
@@ -365,7 +378,7 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
 const DB_NAME='FoodDiaryDB';const DB_VER=1;const STORE='entries';
 let db=null;let entries=[];
 let currentFilter='全部';let currentTab='list';
-let editingId=null;let formRating=0;let formWho=[];let formPhotos=[];let formCategory='';let formEntryType='foodie';
+let editingId=null;let formRating=0;let formWho=[];let formPhotos=[];let formCategory='';let formEntryType='foodie';let formIngredients=[];
 
 const defaultCats=['中餐','火锅','烧烤','日料','西餐','面包甜品','奶茶咖啡','小吃','早餐','午餐','晚餐','夜宵','下午茶','自己做的','其他'];
 const catIcons={'中餐':'🥢','火锅':'🫕','烧烤':'🍖','日料':'🍣','西餐':'🍝','面包甜品':'🍰','奶茶咖啡':'☕','小吃':'🥟','自己做的':'🏠','早餐':'🌅','午餐':'☀️','晚餐':'🌙','夜宵':'🌃','下午茶':'🫖','其他':'🍽️'};
@@ -513,17 +526,24 @@ function buildCard(e,i,whoLabel){
     </div>`;
   }
   const whoText=(e.who||[]).length?`<div style="font-size:10px;color:var(--text-muted);margin-bottom:4px">${label}：${(e.who||[]).join('、')}</div>`:'';
+  const isChef=e.entryType==='chef';
+  const costDisplay=isChef?
+    (e.ingredientCost?` <span style="font-size:13px;color:var(--green);font-weight:700">¥${e.ingredientCost}</span>`:''):
+    (e.totalCost?` <span style="font-size:13px;color:var(--accent);font-weight:700">¥${e.totalCost}</span>`:'');
+  const tagsData=isChef?(e.ingredients||[]):(e.dishes||[]);
+  const tagsLabel=isChef?'🥬':'';
+  const priceTag=(!isChef&&e.price)?`<div class="card-price">¥${e.price}/人</div>`:'';
   return `<div class="card" style="animation-delay:${i*.04}s">
     <div onclick="openDetail('${e.id}')" style="cursor:pointer">${photoHtml}</div>
     <div class="card-body" onclick="openDetail('${e.id}')" style="cursor:pointer">
-      <div class="card-top"><div class="card-name">${e.name}${e.totalCost?` <span style="font-size:13px;color:var(--accent);font-weight:700">¥${e.totalCost}</span>`:''}</div><div class="card-category">${e.category||''}</div></div>
+      <div class="card-top"><div class="card-name">${e.name}${costDisplay}</div><div class="card-category">${e.category||''}</div></div>
       ${e.addr?`<div class="card-addr">📍 ${e.district?e.district+'区 ':''}${e.addr}</div>`:''}
       <div class="card-meta">
         <div class="card-stars" style="margin-bottom:0">${'★'.repeat(e.rating||0)}${'☆'.repeat(5-(e.rating||0))}</div>
         <span style="font-size:14px">${e.rating>=5?'😍':e.rating>=4?'😋':e.rating>=3?'🙂':e.rating>=2?'😐':'😅'}</span>
-        ${e.price?`<div class="card-price">¥${e.price}/人</div>`:''}
+        ${priceTag}
       </div>
-      ${e.dishes&&e.dishes.length?`<div class="card-tags">${e.dishes.map(d=>`<div class="card-tag">${d}</div>`).join('')}</div>`:''}
+      ${tagsData.length?`<div class="card-tags">${tagsData.map(d=>`<div class="card-tag">${tagsLabel}${d}</div>`).join('')}</div>`:''}
       ${whoText}
       <div class="card-footer">
         <div style="display:flex;align-items:center;gap:8px">
@@ -674,6 +694,19 @@ function renderWhoTags(){
   ).join('');
 }
 
+// ===== INGREDIENT TAG (chef mode) =====
+function addIngredient(){const input=document.getElementById('f-ingredient');const v=input.value.trim();if(!v||formIngredients.includes(v))return;formIngredients.push(v);input.value='';renderIngredientTags();}
+function renderIngredientTags(){
+  document.getElementById('ingredientTags').innerHTML=formIngredients.map(w=>
+    `<span class="tag-item" style="background:var(--green)">${w}<button class="tag-remove" onclick="formIngredients=formIngredients.filter(x=>x!=='${w.replace(/'/g,"\\'")}');renderIngredientTags()">&times;</button></span>`
+  ).join('');
+  const allPrev=new Set();entries.filter(e=>e.entryType==='chef').forEach(e=>(e.ingredients||[]).forEach(w=>allPrev.add(w)));
+  const suggestions=[...allPrev].filter(w=>!formIngredients.includes(w));
+  document.getElementById('ingredientPresets').innerHTML=suggestions.map(w=>
+    `<button class="preset-btn" onclick="formIngredients.push('${w.replace(/'/g,"\\'")}');renderIngredientTags()">${w}</button>`
+  ).join('');
+}
+
 // ===== PHOTOS =====
 function handlePhotos(e){
   Array.from(e.target.files).forEach(file=>{const reader=new FileReader();
@@ -696,15 +729,17 @@ function setEntryType(type){
   document.getElementById('typeBtn-chef').classList.toggle('active',type==='chef');
   document.getElementById('whoLabel').textContent=type==='chef'?'厨师':'食客';
   document.getElementById('f-name').placeholder=type==='chef'?'e.g. 红烧排骨':'e.g. 阿大葱油饼';
+  document.getElementById('foodie-fields').style.display=type==='foodie'?'':'none';
+  document.getElementById('chef-fields').style.display=type==='chef'?'':'none';
 }
 
 function openAddModal(id){
-  editingId=id||null;formRating=0;formWho=[];formPhotos=[];formCategory='';formEntryType='foodie';
+  editingId=id||null;formRating=0;formWho=[];formPhotos=[];formCategory='';formEntryType='foodie';formIngredients=[];
   document.getElementById('modalTitle').textContent=id?'编辑打卡':'新增打卡';
   document.getElementById('btnDeleteEntry').style.display=id?'':'none';
   document.getElementById('f-name').value='';document.getElementById('f-district').value='';
   document.getElementById('f-addr').value='';document.getElementById('f-dishes').value='';
-  document.getElementById('f-price').value='';document.getElementById('f-total').value='';document.getElementById('f-notes').value='';
+  document.getElementById('f-price').value='';document.getElementById('f-total').value='';document.getElementById('f-ingredient-cost').value='';document.getElementById('f-notes').value='';
   document.getElementById('f-date').value=new Date().toISOString().slice(0,10);
   document.getElementById('f-cat-input').value='';document.getElementById('f-who').value='';
   document.getElementById('photoUploadArea').style.display='';
@@ -716,9 +751,11 @@ function openAddModal(id){
     document.getElementById('f-notes').value=e.notes||'';document.getElementById('f-date').value=e.date;
     formRating=e.rating;formWho=[...(e.who||[])];formPhotos=[...(e.photos||[])];
     formEntryType=e.entryType||'foodie';
+    formIngredients=[...(e.ingredients||[])];
+    document.getElementById('f-ingredient-cost').value=e.ingredientCost||'';
   }}
   setEntryType(formEntryType);
-  updateStarUI();renderCatTags();renderWhoTags();renderPhotoGrid();
+  updateStarUI();renderCatTags();renderWhoTags();renderIngredientTags();renderPhotoGrid();
   document.getElementById('addModal').classList.add('show');
 }
 function closeAddModal(){document.getElementById('addModal').classList.remove('show');editingId=null;}
@@ -730,9 +767,11 @@ async function saveEntry(){
   if(!name){alert('请输入店名！');return;}
   const data={name,category:formCategory||'其他',entryType:formEntryType,district:document.getElementById('f-district').value,
     addr:document.getElementById('f-addr').value.trim(),rating:formRating||3,who:formWho,
-    dishes:document.getElementById('f-dishes').value.split(/[,，]/).map(s=>s.trim()).filter(Boolean),
+    dishes:formEntryType==='chef'?[]:document.getElementById('f-dishes').value.split(/[,，]/).map(s=>s.trim()).filter(Boolean),
     price:parseInt(document.getElementById('f-price').value)||0,
     totalCost:parseInt(document.getElementById('f-total').value)||0,
+    ingredients:formIngredients,
+    ingredientCost:parseInt(document.getElementById('f-ingredient-cost').value)||0,
     notes:document.getElementById('f-notes').value.trim(),
     date:document.getElementById('f-date').value||new Date().toISOString().slice(0,10),photos:formPhotos};
   if(editingId){
