@@ -60,6 +60,14 @@ body{font-family:-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei
 .stat-label{font-size:9px;color:var(--text-muted);white-space:nowrap}
 
 .filters{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+
+.search-box{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:10px 14px;background:var(--white);border:1px solid var(--warm-200);border-radius:var(--radius-sm);box-shadow:var(--shadow-sm);transition:border-color .2s}
+.search-box:focus-within{border-color:var(--gold)}
+.search-icon{font-size:14px;flex-shrink:0;opacity:.5}
+.search-input{flex:1;border:none;outline:none;background:none;font-size:14px;font-family:inherit;color:var(--text-primary);min-width:0}
+.search-input::placeholder{color:var(--brown-300)}
+.search-clear{width:22px;height:22px;border-radius:50%;background:var(--warm-200);border:none;color:var(--brown-500);font-size:11px;cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0}
+.search-box:focus-within .search-clear,.search-clear.show{display:flex}
 .pill{padding:6px 14px;border-radius:20px;background:var(--white);border:1px solid var(--warm-200);font-size:12px;color:var(--text-secondary);cursor:pointer;transition:all .2s}
 .pill.active{background:var(--gold);color:var(--white);border-color:var(--gold);font-weight:700}
 
@@ -260,6 +268,11 @@ input[type="number"]{-webkit-appearance:none;appearance:none;width:100%;max-widt
   <div id="view-list">
     <div id="greeting" style="font-size:13px;color:var(--brown-500);margin-bottom:12px;padding:8px 12px;background:var(--white);border-radius:var(--radius-sm);border:1px solid var(--warm-200);box-shadow:var(--shadow-sm)"></div>
     <div class="stats-bar" id="statsBar"></div>
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="searchInput" type="text" placeholder="搜索店名、地址、菜名..." oninput="renderCards()">
+      <button class="search-clear" id="searchClear" onclick="document.getElementById('searchInput').value='';renderCards()">✕</button>
+    </div>
     <div class="filters" id="filters"></div>
     <div class="card-list" id="cardList"></div>
   </div>
@@ -561,8 +574,20 @@ function buildCard(e,i,whoLabel){
 const homeCats=new Set(['自己做的','早餐','午餐','晚餐','夜宵','下午茶']);
 
 function renderCards(){
-  const list=fil().sort((a,b)=>b.date.localeCompare(a.date));
+  let list=fil().sort((a,b)=>b.date.localeCompare(a.date));
+  // search filter
+  const searchEl=document.getElementById('searchInput');
+  const q=searchEl?searchEl.value.trim().toLowerCase():'';
+  const clearBtn=document.getElementById('searchClear');
+  if(clearBtn)clearBtn.classList.toggle('show',q.length>0);
+  if(q){
+    list=list.filter(e=>{
+      const haystack=[e.name,e.addr,e.district,e.category,e.notes,...(e.dishes||[]),...(e.ingredients||[]),...(e.who||[])].join(' ').toLowerCase();
+      return haystack.includes(q);
+    });
+  }
   const el=document.getElementById('cardList');
+  if(!list.length&&q){el.innerHTML=`<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">没有找到「${q}」相关的记录</div></div>`;return;}
   if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🍜</div><div class="empty-text">还没有打卡记录<br>点击 + 开始美食之旅</div></div>`;return;}
   el.innerHTML=list.map((e,i)=>buildCard(e,i)).join('');
 }
